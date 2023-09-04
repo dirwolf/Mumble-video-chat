@@ -42,11 +42,17 @@ let joinRoomInit = async () => {
     rtmClient = await AgoraRTM.createInstance(APP_ID)
     await rtmClient.login({uid,token})
 
+    await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
+    // adding displayname as a achannel attribute
+
 
     channel = await rtmClient.createChannel(roomId)
     await channel.join()
 
     channel.on('MemberJoined',handleMemberJoined)
+    channel.on('MemberLeft',handleMemberLeft)
+    channel.on('ChannelMessage',handleChannelMessage)
+    getMembers()
     // Create an AgoraRTC client with the specified mode and codec.
     client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
 
@@ -56,7 +62,6 @@ let joinRoomInit = async () => {
     // Set up event listeners for when a user publishes or leaves.
     client.on('user-published', handleUserPublished);
     client.on('user-left', handleUserLeft);
-
 
     // Call the function to display the user's video stream.
     joinStream();
