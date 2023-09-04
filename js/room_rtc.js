@@ -53,6 +53,13 @@ let joinRoomInit = async () => {
     channel.on('MemberLeft',handleMemberLeft)
     channel.on('ChannelMessage',handleChannelMessage)
     getMembers()
+
+    // It appears that the displayName is not showing in your code because you are using single quotes around 
+    // the string in the addBotMessageToDom function, which prevents JavaScript from interpolating the displayName
+    //  variable into the string. To fix this issue, you should use backticks (```) to create a template literal 
+    //  so that the variable gets replaced correctly. 
+    addBotMessageToDom(`Welcome to the room ${displayName}! 👋`)
+
     // Create an AgoraRTC client with the specified mode and codec.
     client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
 

@@ -114,6 +114,26 @@ let addMessageToDom = (name, message) => {
     }
 
 }
+let addBotMessageToDom = (botMessage) => {
+    let messagesWrapper = document.getElementById('messages')
+
+    let newMessage = `<div class="message__wrapper">
+                        <div class="message__body">
+                            <strong class="message__author">🤖 Mumble Bot</strong>
+                            <p class="message__text">${botMessage}</p>
+                        </div>
+                    </div>`
+
+    messagesWrapper.insertAdjacentHTML('beforeend', newMessage)
+
+    let lastMessage = document.querySelector('#messages .message__wrapper:last-child')
+//     The element being selected has a class of "message__wrapper" and is the last child within an element with the ID "messages."
+// The :last-child selector is used to specifically target the last child element with the class "message__wrapper" within the "messages" element.
+    if(lastMessage){
+        lastMessage.scrollIntoView()
+    }
+
+}
 
 
 let leaveChannel = async () => {
