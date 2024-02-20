@@ -81,18 +81,20 @@ let handleChannelMessage = async (messageData, MemberId) => {
         addMessageToDom(data.displayName, data.message)
     }
 
-    // if(data.type === 'user_left'){
-    //     document.getElementById(`user-container-${data.uid}`).remove()
+    if(data.type === 'user_left'){
+        // this time id is data.uid because we sent them using channel message
+        document.getElementById(`user-container-${data.uid}`).remove()
 
-    //     if(userIdInDisplayFrame === `user-container-${uid}`){
-    //         displayFrame.style.display = null
+        // make sure everything is resized
+        if(userIdInDisplayFrame === `user-container-${uid}`){
+            displayFrame.style.display = null
     
-    //         for(let i = 0; videoFrames.length > i; i++){
-    //             videoFrames[i].style.height = '300px'
-    //             videoFrames[i].style.width = '300px'
-    //         }
-    //     }
-    // }
+            for(let i = 0; videoFrames.length > i; i++){
+                videoFrames[i].style.height = '300px'
+                videoFrames[i].style.width = '300px'
+            }
+        }
+    }
 }
 let addMessageToDom = (name, message) => {
     let messagesWrapper = document.getElementById('messages')

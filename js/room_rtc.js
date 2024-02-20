@@ -12,6 +12,7 @@ if (!uid) {
 let token = null;
 let client;
 
+// let displayFrame = document.getElementById('display-frame');
 let rtmClient;
 let channel;
 // Parse the query string in the URL to get the 'room' parameter.
@@ -71,11 +72,15 @@ let joinRoomInit = async () => {
     client.on('user-left', handleUserLeft);
 
     // Call the function to display the user's video stream.
-    joinStream();
+    
 }
 
 // Function to display the user's stream.
 let joinStream = async () => {
+    // hide the join button because we just joined
+    document.getElementById('join-btn').style.display = 'none'
+    document.getElementsByClassName('stream__actions')[0].style.display = 'flex'
+
     // Create microphone and camera tracks.
     localTracks = await AgoraRTC.createMicrophoneAndCameraTracks();
     // {},{encoderConfig:{
@@ -158,7 +163,6 @@ let handleUserPublished = async (user, mediaType) => {
 let handleUserLeft = async (user) => {
     // Remove the remote user from the 'remoteUsers' object.
     delete remoteUsers[user.uid];
-
     // Remove the HTML element associated with the remote user.
     let item = document.getElementById(`user-container-${user.uid}`);
     if (item) {
@@ -249,11 +253,55 @@ let toggleScreen = async (e) => {
         switchToCamera()
     }
 }
+let leaveStream = async(e) => {
+    e.preventDefault()
+// join button show uo when we leave
+    document.getElementById('join-btn').style.display = 'block'
+    document.getElementsByClassName('stream__actions')[0].style.display = 'none'
 
+    // turn off tracks, stop and close each track
+    for(let i =0;localTracks.length > i; i++){
+        localTracks[i].stop()
+        localTracks[i].close()
+    }
+    // now unpublish the stream
+    await client.unpublish(localScreenTracks[0],localScreenTracks[1])
+    if(localScreenTracks){
+        await client.unpublish([localScreenTracks])        
+    }
+            // remove videoframe from the dom
+     document.getElementById(`user-container-${uid}`).remove()
+
+    //  resize all the circles just like when we were in the room, for leav button
+    if(userIdInDisplayFrame === `user-container-${uid}`){
+        displayFrame.style.display = null
+        let videoFrames = document.getElementsByClassName('video__container')
+    //    expannd videoframe function in room.js , grab it  size
+    // loop through all video frames and resize the video frames
+        for(let i = 0; videoFrames.length > i; i++){
+            videoFrames[i].style.height = '300px'
+            videoFrames[i].style.width = '300px'
+        }
+    }
+        // but for the remote user we techincally unpublished the stream but never 
+    // left the room, so we do it inside handleUsedLeeft function
+    // send a chat message to all users that tis had left
+    channel.sendMessage({text:JSON.stringify({'type':'user_left','uid' :uid})})
+
+
+}
 
 document.getElementById('camera-btn').addEventListener('click', toggleCamera)
 document.getElementById('mic-btn').addEventListener('click', toggleMic)
 document.getElementById('screen-btn').addEventListener('click', toggleScreen)
-
+document.getElementById('join-btn').addEventListener('click', joinStream)
+document.getElementById('leave-btn').addEventListener('click', leaveStream) 
 // Call the function to initialize room joining and streaming.
 joinRoomInit();
+
+// last issue when when we left using agora rtm we also tried to remove the dom elemment /video frame
+// cause an issue ,  doesnt exist  bcoz we removed it by sending message, so in handleuserleft we are gonna 
+// let iterm =     let item = document.getElementById(`user-container-${user.uid}`);
+    // if (item) {
+    //     item.remove();
+    // }
