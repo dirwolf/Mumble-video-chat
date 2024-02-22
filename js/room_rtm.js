@@ -121,7 +121,7 @@ let addBotMessageToDom = (botMessage) => {
 
     let newMessage = `<div class="message__wrapper">
                         <div class="message__body">
-                            <strong class="message__author">🤖 Mumble Bot</strong>
+                            <strong class="message__author">🤖 HiChat Bot</strong>
                             <p class="message__text">${botMessage}</p>
                         </div>
                     </div>`
