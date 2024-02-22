@@ -74,7 +74,7 @@ a {
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 45px;
+  font-size: 40px;
   font-weight: 700;
   line-height: 0;
   margin: 0;
@@ -88,7 +88,7 @@ a {
 }
 
 #logo img {
-  height: 50px;
+  height: 60px;
 }
 
 #nav a {
