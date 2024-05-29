@@ -1,26 +1,24 @@
-// Define your Agora App ID.
+
 const APP_ID = "3aac8ffd0bb44eed9b5acc17c0c332dd";
 
-// Retrieve the user's unique ID from session storage or generate a random one if it doesn't exist.
 let uid = sessionStorage.getItem('uid');
 if (!uid) {
     uid = String(Math.floor(Math.random() * 10000));
     sessionStorage.setItem('uid', uid);
 }
 
-// Initialize variables for token and the Agora RTC client.
+
 let token = null;
 let client;
 
-// let displayFrame = document.getElementById('display-frame');
 let rtmClient;
 let channel;
-// Parse the query string in the URL to get the 'room' parameter.
+
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 let roomId = urlParams.get('room');
 
-// If 'roomId' is not provided in the URL, set it to a default value of 'main'.
+
 if (!roomId) {
     roomId = 'main';
 }
@@ -30,21 +28,21 @@ if(!displayName){
     window.location = 'lobby.html'
 }
 
-// Initialize arrays to store local and remote tracks, and an object to track remote users.
+
 let localTracks = [];
 let remoteUsers = {};
 
 let localScreenTracks;
 let sharingScreen = false;
 
-// Function to join a room and display the user's stream.
+
 let joinRoomInit = async () => {
 
     rtmClient = await AgoraRTM.createInstance(APP_ID)
     await rtmClient.login({uid,token})
 
     await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
-    // adding displayname as a achannel attribute
+
 
 
     channel = await rtmClient.createChannel(roomId)
@@ -55,23 +53,19 @@ let joinRoomInit = async () => {
     channel.on('ChannelMessage',handleChannelMessage)
     getMembers()
 
-    // It appears that the displayName is not showing in your code because you are using single quotes around 
-    // the string in the addBotMessageToDom function, which prevents JavaScript from interpolating the displayName
-    //  variable into the string. To fix this issue, you should use backticks (```) to create a template literal 
-    //  so that the variable gets replaced correctly. 
     addBotMessageToDom(`Welcome to the room ${displayName}! 👋`)
 
-    // Create an AgoraRTC client with the specified mode and codec.
+
     client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
 
-    // Join the Agora room using the App ID, room ID, token (if available), and user ID.
+
     await client.join(APP_ID, roomId, token, uid);
 
-    // Set up event listeners for when a user publishes or leaves.
+
     client.on('user-published', handleUserPublished);
     client.on('user-left', handleUserLeft);
 
-    // Call the function to display the user's video stream.
+
     
 }
 
@@ -83,18 +77,14 @@ let joinStream = async () => {
 
     // Create microphone and camera tracks.
     localTracks = await AgoraRTC.createMicrophoneAndCameraTracks();
-    // {},{encoderConfig:{
-    //     width:{min:640,ideal:1920,max:1920},
-    //     height:{min:480,ideal:1080,max:1080}
-    // }}
-    // Create HTML elements for the user's video stream.
+    
     let player = `
         <div class="video__container" id="user-container-${uid}">
             <div class="video-player" id="user-${uid}"></div>
         </div>
     `;
 
-    // Append the video container to the DOM and add a click event listener.
+
     document.getElementById('streams__container').insertAdjacentHTML('beforeend', player);
     document.getElementById(`user-container-${uid}`).addEventListener('click', expandVideoFrame);
 
@@ -122,22 +112,22 @@ let switchToCamera = async () => {
     await client.publish([localTracks[1]])
 }
 
-// Function to handle when a remote user publishes their stream.
+
 let handleUserPublished = async (user, mediaType) => {
     // Store information about the remote user.
     remoteUsers[user.uid] = user;
 
-    // Subscribe to the remote user's stream based on the media type (video or audio).
+
     await client.subscribe(user, mediaType);
 
-    // Create an HTML player element for the remote user's video stream if it doesn't exist.
+
     let player = document.getElementById(`user-container-${user.uid}`);
     if (player === null) {
         player = `<div class="video__container" id="user-container-${user.uid}">
         <div class="video-player" id="user-${user.uid}"></div>
     </div>`;
 
-        // Append the player element to the DOM and add a click event listener.
+
         document.getElementById('streams__container').insertAdjacentHTML('beforeend', player);
         document.getElementById(`user-container-${user.uid}`).addEventListener('click', expandVideoFrame);
     }
@@ -148,28 +138,28 @@ let handleUserPublished = async (user, mediaType) => {
         videoFrame.style.width = '100px'
     }
 
-    // Play the remote user's video stream if the media type is 'video'.
+
     if (mediaType === 'video') {
         user.videoTrack.play(`user-${user.uid}`);
     }
 
-    // Play the remote user's audio stream if the media type is 'audio'.
+
     if (mediaType === 'audio') {
         user.audio.audioTrack.play();
     }
 }
 
-// Function to handle when a remote user leaves the room.
+
 let handleUserLeft = async (user) => {
-    // Remove the remote user from the 'remoteUsers' object.
+
     delete remoteUsers[user.uid];
-    // Remove the HTML element associated with the remote user.
+
     let item = document.getElementById(`user-container-${user.uid}`);
     if (item) {
         item.remove();
     }
 
-    // If the user being displayed in 'displayFrame' leaves, reset the frame size.
+
     if (userIdInDisplayFrame === `user-container-${user.uid}`) {
         displayFrame.style.display = null;
 

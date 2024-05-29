@@ -1,17 +1,12 @@
 let handleMemberJoined = async (MemberId) => {
     console.log('A new member has joined the room:', MemberId)
-    // It calls another function named addMemberToDom to update the DOM 
-    // (Document Object Model) by adding the new member's information to the user interface.
+
     addMemberToDom(MemberId)
 
     let members = await channel.getMembers()
     updateMemberTotal(members)
 
-    // let members = await channel.getMembers()
-    // updateMemberTotal(members)
 
-    // let {name} = await rtmClient.getUserAttributesByKeys(MemberId, ['name'])
-    // addBotMessageToDom(`Welcome to the room ${name}! 👋`)
 }
 
 let addMemberToDom = async (MemberId) => {
@@ -36,13 +31,11 @@ let handleMemberLeft = async (MemberId) => {
     let members = await channel.getMembers()
     updateMemberTotal(members)
 
-    // let members = await channel.getMembers()
-    // updateMemberTotal(members)
+
 }
 let removeMemberFromDom = async (MemberId) => {
     let memberWrapper = document.getElementById(`member__${MemberId}__wrapper`)
-    // let name = memberWrapper.getElementsByClassName('member_name')[0].textContent
-    // addBotMessageToDom(`${name} has left the room.`)
+
         
     memberWrapper.remove()
 }
@@ -61,14 +54,9 @@ let sendMessage = async (e) =>{
 
     let message = e.target.message.value
     channel.sendMessage({text:JSON.stringify({'type':'chat','message':message,'displayName':displayName})})
-    // { text: JSON.stringify(...) }: This is an object literal with a single property, text, which is being 
-    // set to a value. In this case, the value is generated using JSON.stringify(...). The JSON.stringify()
-    //  method converts a JavaScript object or value into a JSON string. It's typically used to serialize data 
-    // for transmission over the network.
-    addMessageToDom(displayName,message)
-    // to recieve
+
     e.target.reset()
-    // form will reset after we send it
+
 }
 
 
@@ -109,8 +97,8 @@ let addMessageToDom = (name, message) => {
     messagesWrapper.insertAdjacentHTML('beforeend', newMessage)
 
     let lastMessage = document.querySelector('#messages .message__wrapper:last-child')
-//     The element being selected has a class of "message__wrapper" and is the last child within an element with the ID "messages."
-// The :last-child selector is used to specifically target the last child element with the class "message__wrapper" within the "messages" element.
+
+
     if(lastMessage){
         lastMessage.scrollIntoView()
     }
@@ -129,8 +117,6 @@ let addBotMessageToDom = (botMessage) => {
     messagesWrapper.insertAdjacentHTML('beforeend', newMessage)
 
     let lastMessage = document.querySelector('#messages .message__wrapper:last-child')
-//     The element being selected has a class of "message__wrapper" and is the last child within an element with the ID "messages."
-// The :last-child selector is used to specifically target the last child element with the class "message__wrapper" within the "messages" element.
     if(lastMessage){
         lastMessage.scrollIntoView()
     }
