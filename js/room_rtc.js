@@ -21,6 +21,7 @@ let roomId = urlParams.get('room');
 
 if (!roomId) {
     roomId = 'main';
+    window.location.href='lobby.html';
 }
 
 let displayName = sessionStorage.getItem('display_name')
